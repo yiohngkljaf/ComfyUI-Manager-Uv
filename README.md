@@ -1,3 +1,7 @@
+# ComfyUI Manager Uv
+
+**ComfyUI-Manager-Uv** is only available for [uv](https://github.com/astral-sh/uv) architecture
+
 # ComfyUI Manager
 
 **ComfyUI-Manager** is an extension designed to enhance the usability of [ComfyUI](https://github.com/comfyanonymous/ComfyUI). It offers management functions to **install, remove, disable, and enable** various custom nodes of ComfyUI. Furthermore, this extension provides a hub feature and convenience functions to access a wide range of information within ComfyUI.

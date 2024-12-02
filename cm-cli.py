@@ -19,6 +19,7 @@ sys.path.append(os.path.dirname(__file__))
 sys.path.append(os.path.join(os.path.dirname(__file__), "glob"))
 import manager_core as core
 import cm_global
+from uvtools.uv import replace_pip_commands
 
 comfyui_manager_path = os.path.dirname(__file__)
 comfy_path = os.environ.get('COMFYUI_PATH')
@@ -113,7 +114,7 @@ class Ctx:
                     for line in file:
                         package_name = core.remap_pip_package(line.strip())
                         if package_name and not core.is_installed(package_name):
-                            install_cmd = [sys.executable, "-m", "pip", "install", package_name]
+                            install_cmd = ["uv", "pip", "install", package_name]
                             output = subprocess.check_output(install_cmd, cwd=repo_path, text=True)
                             for msg_line in output.split('\n'):
                                 if 'Requirement already satisfied:' in msg_line:
@@ -123,6 +124,7 @@ class Ctx:
 
             if os.path.exists(install_script_path) and f'{repo_path}/install.py' not in self.processed_install:
                 self.processed_install.add(f'{repo_path}/install.py')
+                replace_pip_commands(install_script_path)
                 install_cmd = [sys.executable, install_script_path]
                 output = subprocess.check_output(install_cmd, cwd=repo_path, text=True)
                 for msg_line in output.split('\n'):

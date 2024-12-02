@@ -22,6 +22,9 @@ sys.path.append(glob_path)
 
 import cm_global
 from manager_util import *
+uv_path = os.path.abspath(os.path.join(glob_path, ".."))
+sys.path.append(uv_path)
+from uvtools.uv import replace_pip_commands
 
 version = [2, 54]
 version_str = f"V{version[0]}.{version[1]}" + (f'.{version[2]}' if len(version) > 2 else '')
@@ -93,7 +96,7 @@ def get_installed_packages():
 
     if pip_map is None:
         try:
-            result = subprocess.check_output([sys.executable, '-m', 'pip', 'list'], universal_newlines=True)
+            result = subprocess.check_output(['uv', 'pip', 'list'], universal_newlines=True)
 
             pip_map = {}
             for line in result.split('\n'):
@@ -446,9 +449,9 @@ def execute_install_script(url, repo_path, lazy_mode=False, instant_execution=Fa
                     if package_name and not package_name.startswith('#'):
                         if '--index-url' in package_name:
                             s = package_name.split('--index-url')
-                            install_cmd = [sys.executable, "-m", "pip", "install", s[0].strip(), '--index-url', s[1].strip()]
+                            install_cmd = ["uv", "pip", "install", s[0].strip(), '--index-url', s[1].strip()]
                         else:
-                            install_cmd = [sys.executable, "-m", "pip", "install", package_name]
+                            install_cmd = ["uv", "pip", "install", package_name]
 
                         if package_name.strip() != "" and not package_name.startswith('#'):
                             try_install_script(url, repo_path, install_cmd, instant_execution=instant_execution)
@@ -457,6 +460,7 @@ def execute_install_script(url, repo_path, lazy_mode=False, instant_execution=Fa
 
         if os.path.exists(install_script_path):
             print(f"Install: install script")
+            replace_pip_commands(install_script_path)
             install_cmd = [sys.executable, "install.py"]
             try_install_script(url, repo_path, install_cmd, instant_execution=instant_execution)
 
@@ -758,7 +762,7 @@ def gitclone_fix(files, instant_execution=False):
 
 
 def pip_install(packages):
-    install_cmd = ['#FORCE', sys.executable, "-m", "pip", "install", '-U'] + packages
+    install_cmd = ['#FORCE', "uv", "pip", "install", '-U'] + packages
     try_install_script('pip install via manager', '..', install_cmd)
 
 
@@ -1051,7 +1055,7 @@ def check_a_custom_node_installed(item, do_fetch=False, do_update_check=True, do
 
 def get_installed_pip_packages():
     # extract pip package infos
-    pips = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'], text=True).split('\n')
+    pips = subprocess.check_output(['uv', 'pip', 'freeze'], text=True).split('\n')
 
     res = {}
     for x in pips:

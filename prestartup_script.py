@@ -17,6 +17,9 @@ sys.path.append(glob_path)
 import security_check
 from manager_util import *
 import cm_global
+uv_path = os.path.join(os.path.dirname(__file__))  # ComfyUI-Manager-Uv
+sys.path.append(uv_path)
+from uvtools.uv import replace_pip_commands
 
 security_check.security_check()
 
@@ -483,14 +486,15 @@ if os.path.exists(restore_snapshot_path):
                                 if not package_name.startswith('#'):
                                     if '--index-url' in package_name:
                                         s = package_name.split('--index-url')
-                                        install_cmd = [sys.executable, "-m", "pip", "install", s[0].strip(), '--index-url', s[1].strip()]
+                                        install_cmd = ["uv", "pip", "install", s[0].strip(), '--index-url', s[1].strip()]
                                     else:
-                                        install_cmd = [sys.executable, "-m", "pip", "install", package_name]
+                                        install_cmd = ["uv", "pip", "install", package_name]
 
                                     this_exit_code += process_wrap(install_cmd, repo_path)
 
                 if os.path.exists(install_script_path) and f'{repo_path}/install.py' not in processed_install:
                     processed_install.add(f'{repo_path}/install.py')
+                    replace_pip_commands(install_script_path)
                     install_cmd = [sys.executable, install_script_path]
                     print(f">>> {install_cmd} / {repo_path}")
 
@@ -531,9 +535,9 @@ def execute_lazy_install_script(repo_path, executable):
                 if package_name and not is_installed(package_name):
                     if '--index-url' in package_name:
                         s = package_name.split('--index-url')
-                        install_cmd = [sys.executable, "-m", "pip", "install", s[0].strip(), '--index-url', s[1].strip()]
+                        install_cmd = ["uv", "pip", "install", s[0].strip(), '--index-url', s[1].strip()]
                     else:
-                        install_cmd = [sys.executable, "-m", "pip", "install", package_name]
+                        install_cmd = ["uv", "pip", "install", package_name]
 
                     process_wrap(install_cmd, repo_path)
 

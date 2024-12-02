@@ -372,7 +372,7 @@ def restore_pip_snapshot(pips, options):
         # try all at once
         res = 1
         try:
-            res = subprocess.check_call([sys.executable, '-m', 'pip', 'install'] + non_url)
+            res = subprocess.check_call(['uv', 'pip', 'install'] + non_url)
         except:
             pass
 
@@ -381,7 +381,7 @@ def restore_pip_snapshot(pips, options):
             for x in non_url:
                 res = 1
                 try:
-                    res = subprocess.check_call([sys.executable, '-m', 'pip', 'install', x])
+                    res = subprocess.check_call(['uv', 'pip', 'install', x])
                 except:
                     pass
 
@@ -392,7 +392,7 @@ def restore_pip_snapshot(pips, options):
         for x in non_local_url:
             res = 1
             try:
-                res = subprocess.check_call([sys.executable, '-m', 'pip', 'install', x])
+                res = subprocess.check_call(['uv', 'pip', 'install', x])
             except:
                 pass
 
@@ -403,7 +403,7 @@ def restore_pip_snapshot(pips, options):
         for x in local_url:
             res = 1
             try:
-                res = subprocess.check_call([sys.executable, '-m', 'pip', 'install', x])
+                res = subprocess.check_call(['uv', 'pip', 'install', x])
             except:
                 pass
 

@@ -861,7 +861,7 @@ async def install_custom_node(request):
     if 'pip' in json_data:
         for pname in json_data['pip']:
             pkg = core.remap_pip_package(pname)
-            install_cmd = [sys.executable, "-m", "pip", "install", pkg]
+            install_cmd = ["uv", "pip", "install", pkg]
             core.try_install_script(json_data['files'][0], ".", install_cmd)
 
     core.clear_pip_cache()
@@ -901,11 +901,11 @@ async def fix_custom_node(request):
             return web.Response(status=403)
 
         for pname in json_data['pip']:
-            install_cmd = [sys.executable, "-m", "pip", "install", '-U', pname]
+            install_cmd = ["uv", "pip", "install", '-U', pname]
             core.try_install_script(json_data['files'][0], ".", install_cmd)
 
     # HOTFIX: force downgrade to numpy<2
-    install_cmd = [sys.executable, "-m", "pip", "install", "numpy<2"]
+    install_cmd = ["uv", "pip", "install", "numpy<2"]
     core.try_install_script(json_data['files'][0], ".", install_cmd)
 
     if res:

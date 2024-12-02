@@ -73,7 +73,7 @@ def get_installed_packages(renew=False):
 
     if renew or pip_map is None:
         try:
-            result = subprocess.check_output([sys.executable, '-m', 'pip', 'list'], universal_newlines=True)
+            result = subprocess.check_output(['uv', 'pip', 'list'], universal_newlines=True)
 
             pip_map = {}
             for line in result.split('\n'):
@@ -123,7 +123,7 @@ class PIPFixer:
         if len(spec) > 0:
             platform = spec[1]
         else:
-            cmd = [sys.executable, '-m', 'pip', 'install', '--force', 'torch', 'torchvision', 'torchaudio']
+            cmd = ['uv', 'pip', 'install', '--force', 'torch', 'torchvision', 'torchaudio']
             subprocess.check_output(cmd, universal_newlines=True)
             print(cmd)
             return
@@ -133,12 +133,12 @@ class PIPFixer:
         torchvision_ver = torch_torchvision_version_map.get(torch_ver)
 
         if torchvision_ver is None:
-            cmd = [sys.executable, '-m', 'pip', 'install', '--pre',
+            cmd = ['uv', 'pip', 'install', '--pre',
                    'torch', 'torchvision', 'torchaudio',
                    '--index-url', f"https://download.pytorch.org/whl/nightly/{platform}"]
             print("[manager-core] restore PyTorch to nightly version")
         else:
-            cmd = [sys.executable, '-m', 'pip', 'install',
+            cmd = ['uv', 'pip', 'install',
                    f'torch=={torch_ver}', f'torchvision=={torchvision_ver}', f"torchaudio=={torch_ver}",
                    '--index-url', f"https://download.pytorch.org/whl/{platform}"]
             print(f"[manager-core] restore PyTorch to {torch_ver}+{platform}")
@@ -151,7 +151,7 @@ class PIPFixer:
         # remove `comfy` python package
         try:
             if 'comfy' in new_pip_versions:
-                cmd = [sys.executable, '-m', 'pip', 'uninstall', 'comfy']
+                cmd = ['uv', 'pip', 'uninstall', 'comfy']
                 subprocess.check_output(cmd, universal_newlines=True)
 
                 print(f"[manager-core] 'comfy' python package is uninstalled.\nWARN: The 'comfy' package is completely unrelated to ComfyUI and should never be installed as it causes conflicts with ComfyUI.")
@@ -195,7 +195,7 @@ class PIPFixer:
 
                 if len(targets) > 0:
                     for x in targets:
-                        cmd = [sys.executable, '-m', 'pip', 'install', f"{x}=={versions[0].version_string}"]
+                        cmd = ['uv', 'pip', 'install', f"{x}=={versions[0].version_string}"]
                         subprocess.check_output(cmd, universal_newlines=True)
 
                     print(f"[manager-core] 'opencv' dependencies were fixed: {targets}")
@@ -208,7 +208,7 @@ class PIPFixer:
             np = new_pip_versions.get('numpy')
             if np is not None:
                 if StrictVersion(np) >= StrictVersion('2'):
-                    subprocess.check_output([sys.executable, '-m', 'pip', 'install', f"numpy<2"], universal_newlines=True)
+                    subprocess.check_output(['uv', 'pip', 'install', f"numpy<2"], universal_newlines=True)
         except Exception as e:
             print(f"[manager-core] Failed to restore numpy")
             print(e)
